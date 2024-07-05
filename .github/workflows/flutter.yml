@@ -1,3 +1,53 @@
+# name: CI
+
+# on:
+#   push:
+#     branches:
+#       - master
+#   pull_request:
+#     branches:
+#       - master
+
+# jobs:
+#   flutter_test:
+#     name: Run Flutter Test
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#       - uses: actions/setup-java@v3
+#         with:
+#           distribution: 'temurin'
+#           java-version: '17'
+#       - uses: subosito/flutter-action@v2
+#         with:
+#           channel: 'stable'
+#       - run: flutter pub get
+#       - run: flutter --version
+#       - run: flutter analyze
+#       - run: flutter test
+
+#   build_androidApk:
+#     name: Build Flutter App (Android)
+#     needs: [flutter_test]
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#       - uses: actions/setup-java@v3
+#         with:
+#           distribution: 'temurin'
+#           java-version: '17'
+#       - uses: subosito/flutter-action@v2
+#         with:
+#           channel: 'stable'
+#       - run: flutter pub get
+#       - run: flutter clean
+#       - run: flutter build apk --debug
+#       - uses: ncipollo/release-action@v1
+#         with:
+#           artifacts: "build/app/outputs/apk/debug/*"
+#           tag: v1.0.${{ github.run_number}}
+#         #   token: ${{ secrets.TOKEN}}
+
 name: CI
 
 on:
@@ -42,8 +92,22 @@ jobs:
       - run: flutter pub get
       - run: flutter clean
       - run: flutter build apk --debug
-      - uses: ncipollo/release-action@v1
+      - name: Create Release
+        uses: ncipollo/release-action@v1
         with:
           artifacts: "build/app/outputs/apk/debug/*"
-          tag: v1.0.${{ github.run_number}}
-        #   token: ${{ secrets.TOKEN}}
+          tag: v1.0.${{ github.run_number }}
+          token: ${{ secrets.GH_TOKEN }} # Make sure you add your personal access token as a secret named GH_TOKEN
+          generateReleaseNotes: false
+          makeLatest: legacy
+          omitBody: false
+          omitBodyDuringUpdate: false
+          omitDraftDuringUpdate: false
+          omitName: false
+          omitNameDuringUpdate: false
+          omitPrereleaseDuringUpdate: false
+          removeArtifacts: false
+          replacesArtifacts: true
+          skipIfReleaseExists: false
+          updateOnlyUnreleased: false
+
